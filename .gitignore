@@ -1,0 +1,47 @@
+# Editor directories and files
+.idea/
+*.iml
+
+# Python cache and environment
+__pycache__/
+*.py[cod]
+*.so
+.env
+.env*/
+.venv/
+venv/
+
+# Distribution / packaging
+.Python
+develop-eggs/
+dist/
+build/
+.eggs/
+*.egg-info/
+*.egg
+
+# Logs and local databases
+*.log
+*.sqlite3
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*,cover
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Virtualenv
+pip-wheel-metadata/
+
+# MacOS
+.DS_Store
+
