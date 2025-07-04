@@ -39,17 +39,7 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${POSTGRES_DATA_PATH}
   nocodb_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${NOCO_DATA_PATH}
 
 networks:
   network:

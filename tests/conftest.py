@@ -1,7 +1,7 @@
 import os
 import pytest
 import requests
-from nococlient.client import NocoClient
+from src import NocoDBClient
 
 
 @pytest.fixture(scope="session")
@@ -38,6 +38,8 @@ def api_token(docker_ip, docker_services):
 @pytest.fixture(scope="session")
 def client(docker_ip, docker_services, api_token):
     port = docker_services.port_for("nocodb", 8080)
-    base = f"http://{docker_ip}:{port}"
-    return NocoClient(base_url=base, headers={"xc-token": api_token})
+    base = f"http://{docker_ip}:{port}/api/v2"
+    os.environ["NOCODB_BASE_URL"] = base
+    os.environ["NOCODB_API_KEY"] = api_token
+    return NocoDBClient()
 
