@@ -45,3 +45,4 @@ pip-wheel-metadata/
 # MacOS
 .DS_Store
 
+data/

@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   postgres:
     image: postgres:14
@@ -24,8 +25,8 @@ services:
     container_name: nocodb_cont
     restart: always
     environment:
-      NC_DB: "pg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-mypassword}@postgres:5432?u=${POSTGRES_USER:-postgres}&p=${POSTGRES_PASSWORD:-mypassword}&d=${POSTGRES_DB:-noco_base}"
-      NC_AUTH_JWT_SECRET: ${NC_AUTH_JWT_SECRET:-your-default-secret}
+      NC_DB: "pg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
+      NC_AUTH_JWT_SECRET: ${NC_AUTH_JWT_SECRET}
     volumes:
       - nocodb_data:/usr/app/data/
     ports:
@@ -42,15 +43,15 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${POSTGRES_DATA_PATH:-./data/postgres_db}
+      device: ${POSTGRES_DATA_PATH}
   nocodb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${NOCO_DATA_PATH-./data/noco_db}
+      device: ${NOCO_DATA_PATH}
 
 networks:
   network:
     driver: bridge
-x-compatibility: true
+
