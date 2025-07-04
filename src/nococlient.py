@@ -189,7 +189,7 @@ class NocoDBClient:
         """
         load_dotenv()
         return NocoDBConfig(
-            base_url=os.getenv('NOCODB_BASE_URL', 'http://localhost:8080/api/v2'),
+            base_url=os.getenv('NOCODB_BASE_URL', 'http://localhost:8081/api/v2'),
             api_key=os.getenv('NOCODB_API_KEY', 'default-api-key')
         )
 
