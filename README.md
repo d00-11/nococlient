@@ -5,25 +5,14 @@ Client written in Python to interact with the nocodb api
 
 A `docker-compose.yml` file is provided for spinning up a local NocoDB and PostgreSQL instance. Copy `.env.example` to `.env` and adjust any values if needed.
 
-Common development tasks are managed using [doit](https://pydoit.org/). If the
-`doit` command is not available, install it with `pip install doit`. Run unit
-tests with:
+The tests use the [`pytest-docker`](https://pypi.org/project/pytest-docker/) plugin to start and stop these services automatically. Install the plugin and run the tests with:
 
 ```bash
-doit             # or `doit test`
+pip install pytest-docker
+pytest
 ```
 
-The integration tests require a running NocoDB service. They can be executed with:
-
-```bash
-doit integration
-```
-
-Under the hood this task will start the Docker services (`docker-compose up -d`),
-run `pytest` with the `NOCO_TEST_ONLINE` environment variable set, and then shut
-them down.
-
-Running `pytest` without the `NOCO_TEST_ONLINE` variable will skip the integration tests.
+Running `pytest` without the `NOCO_TEST_ONLINE` variable will skip the integration tests. Set `NOCO_TEST_ONLINE=1` to run them if Docker is available.
 
 ## License
 This project is licensed under the GNU Affero General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
