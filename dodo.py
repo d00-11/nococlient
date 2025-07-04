@@ -18,7 +18,10 @@ def task_integration():
     return {
         'actions': [
             'docker-compose up -d',
-            'NOCO_TEST_ONLINE=1 pytest -q',
+            {
+                'cmd': 'pytest -q',
+                'env': {'NOCO_TEST_ONLINE': '1'}
+            },
             'docker-compose down'
         ],
         'verbosity': 2,
