@@ -6,8 +6,7 @@
 __pycache__/
 *.py[cod]
 *.so
-.env
-.env*/
+.env/
 .venv/
 venv/
 

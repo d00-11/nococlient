@@ -1,17 +1,20 @@
 version: "3.8"
+
 services:
   postgres:
     image: postgres:14
-    container_name: postgres_cont
+    container_name: "${COMPOSE_PROJECT_NAME}_postgres_cont"
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
       POSTGRES_DB: ${POSTGRES_DB:-noco_base}
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
       interval: 10s
@@ -22,36 +25,24 @@ services:
 
   nocodb:
     image: nocodb/nocodb:latest
-    container_name: nocodb_cont
+    container_name: "${COMPOSE_PROJECT_NAME}_nocodb_cont"
     restart: always
+    env_file:
+      - .env
     environment:
       NC_DB: "pg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
       NC_AUTH_JWT_SECRET: ${NC_AUTH_JWT_SECRET}
-    volumes:
-      - nocodb_data:/usr/app/data/
     ports:
-      - "8081:8080"
+      - "8080:8080"
+    tmpfs:
+      - /usr/app/data
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - network
 
-volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${POSTGRES_DATA_PATH}
-  nocodb_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${NOCO_DATA_PATH}
-
 networks:
   network:
     driver: bridge
-
+    name: "${COMPOSE_PROJECT_NAME}_network"

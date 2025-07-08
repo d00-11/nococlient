@@ -11,8 +11,12 @@ def docker_compose_file(pytestconfig):
 
 @pytest.fixture(scope="session")
 def api_token(docker_ip, docker_services):
-    port = docker_services.wait_for_service("nocodb", 8080)
+    port = docker_services.port_for("nocodb", 8080)
     base = f"http://{docker_ip}:{port}"
+    docker_services.wait_until_responsive(
+        timeout=30.0,
+        pause=0.1,
+        check=lambda: requests.get(f"{base}/api/v1/auth/signin").status_code == 200)
 
     r = requests.post(
         f"{base}/api/v1/auth/signin",
