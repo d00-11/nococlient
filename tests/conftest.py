@@ -3,6 +3,14 @@ import pytest
 import requests
 from src import NocoDBClient
 
+def _wait_for_nocodb(base):
+    def check():
+        try:
+            r = requests.get(f"{base}/api/v1")      # or just “/”
+            return r.status_code == 200
+        except requests.exceptions.RequestException:
+            return False
+    return check
 
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
@@ -16,10 +24,11 @@ def api_token(docker_ip, docker_services):
     docker_services.wait_until_responsive(
         timeout=30.0,
         pause=0.1,
-        check=lambda: requests.get(f"{base}/api/v1/auth/signin").status_code == 200)
+        check=_wait_for_nocodb(base)
+    )
 
     r = requests.post(
-        f"{base}/api/v1/auth/signin",
+        f"{base}/api/v1/auth/user/signin",
         json={"email": os.getenv("NC_USER", "admin@example.com"),
               "password": os.getenv("NC_PASS", "password")}
     )
@@ -51,4 +60,3 @@ def client(docker_ip, docker_services, api_token):
     os.environ["NOCODB_BASE_URL"] = base
     os.environ["NOCODB_API_KEY"] = api_token
     return NocoDBClient()
-

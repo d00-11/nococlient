@@ -1,12 +1,8 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:14
     container_name: "${COMPOSE_PROJECT_NAME}_postgres_cont"
     restart: always
-    env_file:
-      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
@@ -27,8 +23,6 @@ services:
     image: nocodb/nocodb:latest
     container_name: "${COMPOSE_PROJECT_NAME}_nocodb_cont"
     restart: always
-    env_file:
-      - .env
     environment:
       NC_DB: "pg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}"
       NC_AUTH_JWT_SECRET: ${NC_AUTH_JWT_SECRET}
