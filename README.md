@@ -3,7 +3,7 @@ Client written in Python to interact with the nocodb api
 
 ## Testing
 
-A `docker-compose.yml` file is provided for spinning up a local NocoDB and PostgreSQL instance. Copy `.env.example` to `.env` and adjust any values if needed. Tests use `pytest-docker` to automatically start and stop the services.
+A `docker-compose.yml` file is provided for spinning up a local NocoDB and PostgreSQL instance. A .env file is provided for testing, change values if needed.
 
 Run the tests with:
 

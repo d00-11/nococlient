@@ -1,7 +1,6 @@
 from .nococlient import (
     NocoDBClient,
     NocoDBConfig,
-#    NoCoDBConfigError,
     NoCoDBResponseError,
     RetryConfig
 )
@@ -9,7 +8,6 @@ from .nococlient import (
 __all__ = [
     "NocoDBClient",
     "NocoDBConfig",
-    "NoCoDBConfigError",
     "NoCoDBResponseError",
     "RetryConfig"
 ]

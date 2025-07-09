@@ -6,12 +6,11 @@ from src import NocoDBClient
 def _wait_for_nocodb(base):
     def check():
         try:
-            r = requests.get(f"{base}/api/v1")      # or just “/”
-            return r.status_code == 200
-        except requests.exceptions.RequestException:
+            r = requests.get(base)     # root returns 200 when UI is ready
+            return r.ok
+        except requests.RequestException:
             return False
     return check
-
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
     return os.path.join(pytestconfig.rootdir, "docker-compose.yml")
@@ -26,31 +25,35 @@ def api_token(docker_ip, docker_services):
         pause=0.1,
         check=_wait_for_nocodb(base)
     )
-
+    requests.post(
+        f"{base}/api/v1/auth/user/signup",
+        json={
+            "email": os.getenv("NC_USER", "admin@example.com"),
+            "password": os.getenv("NC_PASS", "password"),
+            "firstname": "Admin",
+            "lastname": "Smith",
+        }
+    )
     r = requests.post(
         f"{base}/api/v1/auth/user/signin",
         json={"email": os.getenv("NC_USER", "admin@example.com"),
               "password": os.getenv("NC_PASS", "password")}
     )
     r.raise_for_status()
-    jwt = r.json()["jwt"]
+    jwt = r.json()["token"]
 
-    headers = {"xc-auth": jwt}
-    r = requests.get(
-        f"{base}/api/v1/db/meta/projects/{os.getenv('NC_PROJECT_ID', '1')}/api-tokens",
-        headers=headers
-    )
-    r.raise_for_status()
-    tokens = r.json()
-    if tokens:
-        return tokens[0]["token"]
+    projects = requests.get(f"{base}/api/v1/db/meta/projects",
+                        headers={"xc-auth": jwt}).json()["list"]
+    project_id = projects[0]["id"]
 
-    r = requests.post(
-        f"{base}/api/v1/db/meta/projects/{os.getenv('NC_PROJECT_ID', '1')}/api-tokens",
-        headers=headers
+    create = requests.post(
+        f"{base}/api/v1/db/meta/projects/{project_id}/api-tokens",
+        headers={"xc-auth": jwt},
+        json={"name": "my-long-term-token"}
     )
-    r.raise_for_status()
-    return r.json()["token"]
+    create.raise_for_status()
+    api_token = create.json()["token"]
+    os.environ["NOCODB_API_KEY"] = api_token
 
 
 @pytest.fixture(scope="session")
@@ -58,5 +61,4 @@ def client(docker_ip, docker_services, api_token):
     port = docker_services.port_for("nocodb", 8080)
     base = f"http://{docker_ip}:{port}/api/v2"
     os.environ["NOCODB_BASE_URL"] = base
-    os.environ["NOCODB_API_KEY"] = api_token
     return NocoDBClient()
