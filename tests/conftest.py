@@ -11,10 +11,13 @@ def _wait_for_nocodb(base):
         except requests.RequestException:
             return False
     return check
-@pytest.fixture(scope="session")
-def docker_compose_file(pytestconfig):
-    return os.path.join(pytestconfig.rootdir, "docker-compose.yml")
 
+@pytest.fixture(scope="session")
+def docker_compose_file():
+    # __file__ is tests/conftest.py
+    tests_dir = os.path.dirname(__file__)
+    # look for docker-compose.yml next to this conftest
+    return os.path.join(tests_dir, "docker-compose.yml")
 
 @pytest.fixture(scope="session")
 def api_token(docker_ip, docker_services):
