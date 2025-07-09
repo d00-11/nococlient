@@ -57,7 +57,7 @@ def api_token(docker_ip, docker_services):
 
 
 @pytest.fixture(scope="session")
-def client(docker_ip, docker_services, api_token):
+def client(docker_ip, docker_services,api_token):
     port = docker_services.port_for("nocodb", 8080)
     base = f"http://{docker_ip}:{port}/api/v2"
     os.environ["NOCODB_BASE_URL"] = base
