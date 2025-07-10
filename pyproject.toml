@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nococlient"
+version = "0.1.0"
+description = "Client written in Python to interact with the NocoDB API"
+authors = [{name = "NocoClient Authors", email = "dev@example.com"}]
+license = {text = "AGPL-3.0-or-later"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests",
+    "colorlog",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-docker",
+    "ruff",
+    "mypy",
+    "pip-tools"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+

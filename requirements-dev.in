@@ -1,0 +1,5 @@
+pytest
+pytest-docker
+ruff
+mypy
+pip-tools

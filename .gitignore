@@ -45,3 +45,14 @@ pip-wheel-metadata/
 .DS_Store
 
 data/
+# Static type checker cache
+.mypy_cache/
+
+# pytest cache
+.pytest_cache/
+
+# ruff cache
+.ruff_cache/
+
+# PEP 582 local packages
+__pypackages__/
