@@ -31,6 +31,8 @@ and then run the tests:
 ```bash
 pytest -q
 ```
+## Disclaimer
+This code was produced with extensive help of LLMs, but is not entierly vibe coded.
 
 ## License
 This project is licensed under the GNU Affero General Public License v3.0 - see
