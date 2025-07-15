@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nococlient"
-version = "0.1.0"
+version = "0.1.1"
 description = "Client written in Python to interact with the NocoDB API"
 authors = [{name = "NocoClient Authors", email = "dev@example.com"}]
 license = {text = "AGPL-3.0-or-later"}
@@ -26,5 +26,5 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["src/nococlient"]
 

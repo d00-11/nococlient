@@ -9,6 +9,9 @@ Install the package and its runtime dependencies with `pip`:
 pip install .
 ```
 
+The project uses a `src/` layout and the Python package lives under
+`src/nococlient` in the repository.
+
 The client requires two environment variables when used:
 `NOCODB_BASE_URL` and `NOCODB_API_KEY`.
 Copy `.env.example` to `.env` and adjust the values.
