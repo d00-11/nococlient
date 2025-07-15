@@ -1,7 +1,7 @@
 import os
 import pytest
 import requests
-from src import NocoDBClient
+from nococlient import NocoDBClient
 
 def _wait_for_nocodb(base):
     def check():
