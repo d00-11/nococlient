@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from nococlient import NocoDBClient, NocoDBConfig
