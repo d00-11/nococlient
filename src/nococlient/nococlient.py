@@ -85,13 +85,13 @@ class RetryConfig:
 @dataclass
 class NocoDBConfig:
     """Configuration class for NocoDB API settings."""
-    base_url: str
-    api_key: str
+    base_url: Optional[str] = None
+    api_key: Optional[str] = None
 
     @property
     def headers(self) -> dict[str, str]:
         """Return headers required for API requests."""
-        return {"xc-token": self.api_key}
+        return {"xc-token": self.api_key} if self.api_key is not None else {}
 
 class NocoDBClient:
 
@@ -118,10 +118,18 @@ class NocoDBClient:
     }
 
 
-    def __init__(self):
-        """
-        Initialize NocoDBClient with optional custom configuration.
-        Sets up proper error handling and logging.
+    def __init__(
+        self,
+        config: Optional[NocoDBConfig] = None,
+        *,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+    ):
+        """Initialize ``NocoDBClient``.
+
+        Parameters can be provided either via ``config`` or directly as
+        ``base_url`` and ``api_key``. Any missing values are loaded from the
+        ``NOCODB_BASE_URL`` and ``NOCODB_API_KEY`` environment variables.
         """
         # Configure logging with colors
         self.logger = logging.getLogger(__name__)
@@ -136,15 +144,38 @@ class NocoDBClient:
             }
             formatter = colorlog.ColoredFormatter(
                 "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                log_colors=log_colors
+                log_colors=log_colors,
             )
             handler = logging.StreamHandler()
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
             self.logger.setLevel(logging.INFO)
-        
+
+        # Determine configuration
+        if config is not None and (base_url is not None or api_key is not None):
+            raise ValueError("Provide either 'config' or 'base_url'/'api_key', not both")
+
+        if config is None:
+            config = NocoDBConfig(base_url=base_url, api_key=api_key)
+        else:
+            if not isinstance(config, NocoDBConfig):
+                raise TypeError("config must be a NocoDBConfig instance")
+            # explicit params are disallowed but mypy-friendly check already done
+
+        # Load environment variables for any missing values
+        load_dotenv()
+        if config.base_url is None:
+            config.base_url = os.getenv("NOCODB_BASE_URL")
+        if config.api_key is None:
+            config.api_key = os.getenv("NOCODB_API_KEY")
+
+        if config.base_url is None or config.api_key is None:
+            raise ValueError(
+                "NOCODB_BASE_URL and NOCODB_API_KEY must be provided via parameters or environment variables"
+            )
+
         # Initialize configuration and caches
-        self.config = self._get_global_config()
+        self.config = config
         self._sessions = {}
         self._table_caches = {}
         self._column_caches = {}
@@ -179,19 +210,6 @@ class NocoDBClient:
         if isinstance(exc, requests.HTTPError):
             return exc.response.status_code in config.retry_status_codes
         return isinstance(exc, (requests.ConnectionError, requests.URLRequired))
-    @staticmethod
-    def _get_global_config() -> NocoDBConfig:
-        """
-        Return the global configuration for NocoDB API.
-
-        Returns:
-            NocoDBConfig: Configuration object with NocoDB settings
-        """
-        load_dotenv()
-        return NocoDBConfig(
-            base_url=os.getenv('NOCODB_BASE_URL', 'http://localhost:8081/api/v2'),
-            api_key=os.getenv('NOCODB_API_KEY', 'default-api-key')
-        )
 
     def _create_session(self) -> requests.Session:
         """
